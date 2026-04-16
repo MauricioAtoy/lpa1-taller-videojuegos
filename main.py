@@ -33,4 +33,11 @@ class Jugador(Entidad):
     def atacar (self, enemigo):
         if self.arma:
             enemigo.recibir_daño(self.arma.daño)
-            
+
+class enemigo (Entidad):
+    def __init__(self, x, y, vida, daño):
+        super().__init__(x, y, vida)
+        self.daño = daño
+    def atacar (self, jugador):
+        jugador.recibir_daño(self.daño)
+
