@@ -50,3 +50,11 @@ class arma:
     def mejorar (self):
         self.nivel += 1
         self.daño += 5
+
+class Tienda:
+    def __init__(self):
+        self.item =[]
+
+    def comprar (self, jugador, item):
+        if jugador.oro >= item.precio:
+            
