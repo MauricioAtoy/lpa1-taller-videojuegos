@@ -11,4 +11,14 @@ class Juego:
     def dibujar(self):
         pass
 
-class personaje
+class Entidad:
+    def __init__(self, x, y, vida):
+        self.x = x
+        self.y = y
+        self.vida = vida
+
+    def mover(self):
+        pass
+
+    def recibir_daño(self, cantidad):
+        self.vida -= cantidad
