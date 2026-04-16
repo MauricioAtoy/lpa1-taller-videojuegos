@@ -22,3 +22,15 @@ class Entidad:
 
     def recibir_daño(self, cantidad):
         self.vida -= cantidad
+
+class Jugador(Entidad):
+    def __init__(self):
+        super().__init__(100, 100, 100)
+        self.arma = None
+        self.inventario = []
+        self.oro = 100
+    
+    def atacar (self, enemigo):
+        if self.arma:
+            enemigo.recibir_daño(self.arma.daño)
+            
