@@ -41,3 +41,12 @@ class enemigo (Entidad):
     def atacar (self, jugador):
         jugador.recibir_daño(self.daño)
 
+class arma:
+    def __init__(self, nombre, daño, nivel=1):
+        self.nombre = nombre
+        self.dañi = daño
+        self.nivel = nivel
+
+    def mejorar (self):
+        self.nivel += 1
+        self.daño += 5
