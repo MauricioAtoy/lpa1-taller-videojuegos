@@ -57,4 +57,23 @@ class Tienda:
 
     def comprar (self, jugador, item):
         if jugador.oro >= item.precio:
-            
+            jugador.oro -= item.precio
+            jugador.inventario.append(item)
+    def vender(self, jugador, item):
+        jugador.oro += item.precio //2
+        jugador.inventario.remove(item)
+
+class Dialogo:
+    def __init__(self, textos):
+        self.textos = textos
+        self.indice = 0
+        pass
+
+    def seiguiente(self):
+        if self.indice < len(self.textos):
+            texto = self.textos[self.indice]
+            self.indice += 1
+            return texto
+        
+
+        
