@@ -1,79 +1,32 @@
-# programa principal
-class Juego:
-    def __init__(self):
-        self.estado = "menu"  # menu, combate, dialogo, tienda
-        self.jugador = Jugador()
-        self.enemigos = []
-    
-    def actualizar(self):
-        pass
-    
-    def dibujar(self):
-        pass
+import pygame
+from juego import Juego
 
-class Entidad:
-    def __init__(self, x, y, vida):
-        self.x = x
-        self.y = y
-        self.vida = vida
+pygame.init()
 
-    def mover(self):
-        pass
+ANCHO = 800
+ALTO = 600
+pantalla = pygame.display.set_mode((ANCHO, ALTO))
+pygame.display.set_caption("Juego 2D POO")
 
-    def recibir_daño(self, cantidad):
-        self.vida -= cantidad
+clock = pygame.time.Clock()
 
-class Jugador(Entidad):
-    def __init__(self):
-        super().__init__(100, 100, 100)
-        self.arma = None
-        self.inventario = []
-        self.oro = 100
-    
-    def atacar (self, enemigo):
-        if self.arma:
-            enemigo.recibir_daño(self.arma.daño)
+juego = Juego(pantalla)
 
-class enemigo (Entidad):
-    def __init__(self, x, y, vida, daño):
-        super().__init__(x, y, vida)
-        self.daño = daño
-    def atacar (self, jugador):
-        jugador.recibir_daño(self.daño)
+ejecutando = True
+while ejecutando:
+    clock.tick(60)
 
-class arma:
-    def __init__(self, nombre, daño, nivel=1):
-        self.nombre = nombre
-        self.dañi = daño
-        self.nivel = nivel
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT:
+            ejecutando = False
+        juego.manejar_eventos(evento)
 
-    def mejorar (self):
-        self.nivel += 1
-        self.daño += 5
+    juego.actualizar()
+    juego.dibujar()
 
-class Tienda:
-    def __init__(self):
-        self.item =[]
+    pygame.display.flip()
 
-    def comprar (self, jugador, item):
-        if jugador.oro >= item.precio:
-            jugador.oro -= item.precio
-            jugador.inventario.append(item)
-    def vender(self, jugador, item):
-        jugador.oro += item.precio //2
-        jugador.inventario.remove(item)
-
-class Dialogo:
-    def __init__(self, textos):
-        self.textos = textos
-        self.indice = 0
-        pass
-
-    def seiguiente(self):
-        if self.indice < len(self.textos):
-            texto = self.textos[self.indice]
-            self.indice += 1
-            return texto
+pygame.quit()
         
 
         
