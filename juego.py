@@ -13,6 +13,7 @@ class Juego:
         self.turno = "jugador"
         self.defendiendo = False
         self.font = pygame.font.SysFont(None, 28)
+        self.nivel = 1
 
     def actualizar(self):
         import pygame
@@ -36,7 +37,18 @@ class Juego:
             self.combate()
         if self.estado == "game_over":
             return  # detener todo
+        if self.enemigo is None:
+            vida = 50 + (self.nivel * 20)
+            danio = 5 + (self.nivel * 2)
 
+            self.enemigo = Enemigo(
+                random.randint(0, 700),
+                random.randint(0, 500)
+            )
+
+            self.enemigo.vida = vida
+            self.enemigo.vida_max = vida
+            self.enemigo.danio = danio
 
     def combate(self):
         if self.turno == "enemigo":
@@ -51,6 +63,8 @@ class Juego:
 
         if self.enemigo and self.enemigo.vida <= 0:
             print("¡Enemigo derrotado!")
+            self.nivel += 1  #subir nivel
+            print(f"Subiste al nivel {self.nivel}")
             self.enemigo = None
             self.estado = "exploracion"
             return
@@ -77,6 +91,7 @@ class Juego:
     # muerte del jugador
         if self.jugador.vida <= 0:
             self.estado = "game_over"
+        
 
     def dibujar(self):
         self.pantalla.fill((30, 30, 30))
