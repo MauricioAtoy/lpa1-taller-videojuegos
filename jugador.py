@@ -7,7 +7,9 @@ class Jugador(Entidad):
         super().__init__(x, y, 100)
         self.velocidad = 5
         self.arma = Arma("Espada", 10)
-
+        self.xp = 0
+        self.xp_max = 100
+        self.nivel = 1
     def mover(self):
         teclas = pygame.key.get_pressed()
 
@@ -31,3 +33,22 @@ class Jugador(Entidad):
     def dibujar(self, pantalla):
         pygame.draw.rect(pantalla, (0, 200, 0), self.rect)
         self.dibujar_barra_vida(pantalla) 
+    def ganar_xp(self, cantidad):
+        self.xp += cantidad
+        print(f"+{cantidad} XP")
+        # subir nivel si alcanza el máximo
+        while self.xp >= self.xp_max:
+            self.xp -= self.xp_max
+            self.subir_nivel()
+
+            
+    def subir_nivel(self):
+        self.nivel += 1
+        self.xp_max += 50  # cada nivel pide más XP
+
+        # mejoras
+        self.vida_max += 20
+        self.vida = self.vida_max
+        self.arma.danio += 2
+
+        print(f"¡Subiste a nivel {self.nivel}!")

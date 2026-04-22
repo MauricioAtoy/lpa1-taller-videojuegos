@@ -2,7 +2,7 @@ from jugador import Jugador
 from enemigo import Enemigo
 import random 
 import pygame
-
+from trampa import TrampaExplosiva
 class Juego:
     def __init__(self, pantalla):
         self.pantalla = pantalla
@@ -13,7 +13,10 @@ class Juego:
         self.turno = "jugador"
         self.defendiendo = False
         self.font = pygame.font.SysFont(None, 28)
+        self.xp = 0
+        self.xp_max = 100  # XP necesaria para subir nivel
         self.nivel = 1
+
 
     def actualizar(self):
         import pygame
@@ -63,8 +66,8 @@ class Juego:
 
         if self.enemigo and self.enemigo.vida <= 0:
             print("¡Enemigo derrotado!")
-            self.nivel += 1  #subir nivel
-            print(f"Subiste al nivel {self.nivel}")
+            xp_ganada = 30 + (self.jugador.nivel * 10)  # cálculo de XP
+            self.jugador.ganar_xp(xp_ganada) 
             self.enemigo = None
             self.estado = "exploracion"
             return
@@ -81,10 +84,22 @@ class Juego:
                 self.enemigo.atacar(self.jugador)
 
             self.turno = "jugador"
+        
+        if self.enemigo and self.enemigo.vida <= 0:
+            print("¡Enemigo derrotado!")
+    
+            xp_ganada = 50  # puedes escalar luego
+            self.jugador.ganar_xp(xp_ganada)
+
+            self.enemigo = None
+            self.estado = "exploracion"
+            return
 
     # muerte del enemigo
         if self.enemigo and self.enemigo.vida <= 0:
             print("¡Enemigo derrotado!")
+            xp_ganada = 30 + (self.jugador.nivel * 10) 
+            self.jugador.ganar_xp(xp_ganada)
             self.enemigo = None
             self.estado = "exploracion"
 
@@ -96,6 +111,15 @@ class Juego:
     def dibujar(self):
         self.pantalla.fill((30, 30, 30))
 
+        fuente = pygame.font.SysFont(None, 28)
+
+        texto_xp = fuente.render(
+            f"XP: {self.jugador.xp}/{self.jugador.xp_max}",
+            True,
+            (255, 255, 0)
+        )
+
+        self.pantalla.blit(texto_xp, (20, 80))
         self.jugador.dibujar(self.pantalla)
         if self.enemigo:  #verificar antes de dibujar
             self.enemigo.dibujar(self.pantalla)
@@ -104,6 +128,32 @@ class Juego:
         if self.estado == "game_over":
             self.dibujar_game_over()
             return
+        fuente = pygame.font.SysFont(None, 28)
+
+        texto_xp = fuente.render(
+            f"XP: {self.jugador.xp}/{self.jugador.xp_max}",
+            True,
+            (255, 255, 0)
+        )
+        self.pantalla.blit(texto_xp, (20, 80))
+        # barra XP
+        pygame.draw.rect(self.pantalla, (60,60,60), (20, 100, 200, 10))
+        progreso = self.jugador.xp / self.jugador.xp_max
+        pygame.draw.rect(
+            self.pantalla,
+            (255,255,0),
+            (20, 100, 200 * progreso, 10)
+
+        )
+        fuente = pygame.font.SysFont(None, 30)
+
+        texto_nivel = fuente.render(
+            f"Nivel: {self.jugador.nivel}",
+            True,
+            (255, 255, 255)
+        )
+
+        self.pantalla.blit(texto_nivel, (20, 50))
 
     def dibujar_ui(self):
     # texto del turno
@@ -118,7 +168,19 @@ class Juego:
         # instrucciones
         instrucciones = "J: Atacar   K: Defender"
         texto_instr = self.font.render(instrucciones, True, (200, 200, 200))
-        self.pantalla.blit(texto_instr, (20, 50)) 
+        # tamaño del texto
+        ancho_texto = texto_instr.get_width()
+        alto_texto = texto_instr.get_height()
+
+        # tamaño pantalla
+        ancho_pantalla = self.pantalla.get_width()
+        alto_pantalla = self.pantalla.get_height()
+
+        # posición abajo derecha
+        x = ancho_pantalla - ancho_texto - 20
+        y = alto_pantalla - alto_texto - 20
+
+        self.pantalla.blit(texto_instr, (x, y))
 
     def dibujar_barra_vida(self, pantalla):
         ancho = 40
