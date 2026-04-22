@@ -16,8 +16,8 @@ class Juego:
         self.xp = 0
         self.xp_max = 100  # XP necesaria para subir nivel
         self.nivel = 1
-
-
+        self.tiempo = 5
+        self.trampas = []
     def actualizar(self):
         import pygame
         teclas = pygame.key.get_pressed()
@@ -52,6 +52,13 @@ class Juego:
             self.enemigo.vida = vida
             self.enemigo.vida_max = vida
             self.enemigo.danio = danio
+        #trampa
+        for trampa in self.trampas:
+            if trampa.activa:
+                trampa.explotar(self.enemigo)
+                trampa.tiempo -= 1
+                if trampa.tiempo <= 0:
+                    trampa.explotar(self.enemigo)
 
     def combate(self):
         if self.turno == "enemigo":
@@ -154,6 +161,15 @@ class Juego:
         )
 
         self.pantalla.blit(texto_nivel, (20, 50))
+        # dibujar trampa
+        for trampa in self.trampas:
+            if trampa.activa:
+                pygame.draw.circle(
+                    self.pantalla,
+                    (255, 255, 0),
+                    (int(trampa.x), int(trampa.y)),
+                    5
+                )
 
     def dibujar_ui(self):
     # texto del turno
@@ -209,6 +225,16 @@ class Juego:
         if self.estado == "combate" and self.turno == "jugador":
 
             if evento.type == pygame.KEYDOWN:
+                
+                if evento.key == pygame.K_t:  #trampa con la tecla T
+                    trampa = TrampaExplosiva(
+                    self.jugador.x,
+                    self.jugador.y,
+                    alcance=100,
+                    danio=20
+                    )
+                    self.trampas.append(trampa)
+                    print("Trampa colocada")
 
                 if evento.key == pygame.K_j:  # atacar
                     self.jugador.atacar(self.enemigo)
@@ -221,6 +247,7 @@ class Juego:
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_r:
                     self.reiniciar()
+
 
     def dibujar_game_over(self):
         # fondo oscuro
