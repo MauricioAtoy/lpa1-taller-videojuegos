@@ -2,7 +2,6 @@ import pygame
 from juego import Juego
 
 pygame.init()
-
 ANCHO = 800
 ALTO = 600
 pantalla = pygame.display.set_mode((ANCHO, ALTO))

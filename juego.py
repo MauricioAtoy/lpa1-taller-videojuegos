@@ -19,7 +19,6 @@ class Juego:
         self.tiempo = 5
         self.trampas = []
     def actualizar(self):
-        import pygame
         teclas = pygame.key.get_pressed()
         if self.estado == "exploracion":
             self.jugador.mover()
@@ -144,14 +143,14 @@ class Juego:
         )
         self.pantalla.blit(texto_xp, (20, 80))
         # barra XP
-        pygame.draw.rect(self.pantalla, (60,60,60), (20, 100, 200, 10))
+        #pygame.draw.rect(self.pantalla, (60,60,60), (20, 100, 200, 10)) 
         progreso = self.jugador.xp / self.jugador.xp_max
-        pygame.draw.rect(
-            self.pantalla,
-            (255,255,0),
-            (20, 100, 200 * progreso, 10)
+        # pygame.draw.rect(
+        #     self.pantalla,
+        #     (255,255,0),
+        #     (20, 100, 200 * progreso, 10)
 
-        )
+        # )
         fuente = pygame.font.SysFont(None, 30)
 
         texto_nivel = fuente.render(
@@ -164,13 +163,72 @@ class Juego:
         # dibujar trampa
         for trampa in self.trampas:
             if trampa.activa:
+            # centro de la trampa
                 pygame.draw.circle(
                     self.pantalla,
-                    (255, 255, 0),
+                    (250, 250, 250),
                     (int(trampa.x), int(trampa.y)),
-                    5
+                    20
+                )
+            # radio de explosión
+                pygame.draw.circle(
+                    self.pantalla,
+                    (255, 200, 0),
+                    (int(trampa.x), int(trampa.y)),
+                    int(trampa.alcance),
+                    1
                 )
 
+    
+
+    def dibujar_barra_vida(self, pantalla):
+        ancho = 40
+        alto = 6
+
+        porcentaje = self.vida / self.vida_max
+
+        # fondo
+        pygame.draw.rect(pantalla, (60, 60, 60), (self.x, self.y - 12, ancho, alto))
+
+        # vida
+        pygame.draw.rect(
+            pantalla,
+            (0, 200, 0),
+            (self.x, self.y - 12, ancho * porcentaje, alto)
+        )
+
+    # borde
+        pygame.draw.rect(
+            pantalla,
+            (255, 255, 255),
+            (self.x, self.y - 12, ancho, alto),
+            1
+        )
+    def manejar_eventos(self, evento):
+        if evento.type == pygame.KEYDOWN:
+            
+            if evento.key == pygame.K_t and self.estado == "exploracion":
+                trampa = TrampaExplosiva(
+                    self.jugador.rect.centerx,
+                    self.jugador.rect.centery,
+                    alcance=100,
+                    danio=20
+                )
+                self.trampas.append(trampa)
+                print("Trampa colocada")
+            if self.estado == "combate" and self.turno == "jugador":
+
+                if evento.key == pygame.K_j:  # atacar
+                    self.jugador.atacar(self.enemigo)
+                    self.turno = "enemigo"
+
+                elif evento.key == pygame.K_k:  # defender
+                    self.defendiendo = True
+                    self.turno = "enemigo"
+            if self.estado == "game_over":
+            
+                if evento.key == pygame.K_r:
+                    self.reiniciar()
     def dibujar_ui(self):
     # texto del turno
         if self.turno == "jugador":
@@ -197,58 +255,7 @@ class Juego:
         y = alto_pantalla - alto_texto - 20
 
         self.pantalla.blit(texto_instr, (x, y))
-
-    def dibujar_barra_vida(self, pantalla):
-        ancho = 40
-        alto = 6
-
-        porcentaje = self.vida / self.vida_max
-
-        # fondo
-        pygame.draw.rect(pantalla, (60, 60, 60), (self.x, self.y - 12, ancho, alto))
-
-        # vida
-        pygame.draw.rect(
-            pantalla,
-            (0, 200, 0),
-            (self.x, self.y - 12, ancho * porcentaje, alto)
-        )
-
-    # borde
-        pygame.draw.rect(
-            pantalla,
-            (255, 255, 255),
-            (self.x, self.y - 12, ancho, alto),
-            1
-        )
-    def manejar_eventos(self, evento):
-        if self.estado == "combate" and self.turno == "jugador":
-
-            if evento.type == pygame.KEYDOWN:
-                
-                if evento.key == pygame.K_t:  #trampa con la tecla T
-                    trampa = TrampaExplosiva(
-                    self.jugador.x,
-                    self.jugador.y,
-                    alcance=100,
-                    danio=20
-                    )
-                    self.trampas.append(trampa)
-                    print("Trampa colocada")
-
-                if evento.key == pygame.K_j:  # atacar
-                    self.jugador.atacar(self.enemigo)
-                    self.turno = "enemigo"
-
-                elif evento.key == pygame.K_k:  # defender
-                    self.defendiendo = True
-                    self.turno = "enemigo"
-        if self.estado == "game_over":
-            if evento.type == pygame.KEYDOWN:
-                if evento.key == pygame.K_r:
-                    self.reiniciar()
-
-
+        
     def dibujar_game_over(self):
         # fondo oscuro
         self.pantalla.fill((0, 0, 0))

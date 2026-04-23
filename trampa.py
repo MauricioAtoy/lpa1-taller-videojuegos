@@ -5,7 +5,7 @@ class TrampaExplosiva:
         self.alcance = alcance
         self.danio = danio
         self.activa = True
-
+        self.tiempo = 5
     def explotar(self, enemigo):
         if not self.activa or enemigo is None:
             return
